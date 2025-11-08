@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CANGI SOLUTIONS LTDA — Publicações que informam e permanecem</title>
+  <meta name="description" content="CANGI SOLUTIONS LTDA — editorial para jornais, revistas, livros e diretórios. Estratégia, edição, design e tecnologia para publicações impressas e digitais.">
+  <meta name="color-scheme" content="light dark" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <!--
+    Projeto: CANGI SOLUTIONS LTDA
+    Setor: Newspaper, Periodical, Book, and Directory Publishers (Publishing Industries)
+    Endereço: Avenida Delfim Moreira, 1071, 25953-237, Teresópolis
+    E-mail: renato@cangisolutions.org
+    Observações:
+      - Sem campo de telefone na UI (compatível com Apple Developer Guidelines).
+      - Acessibilidade: labels, contrastes, navegação por teclado, aria-*.
+      - Single file: HTML + CSS + JS.
+  -->
+  <style>
+    :root{
+      /* Paleta inspirada no layout de referência (escuro + vidro fosco) */
+      --ink:#0f1417;                  /* texto principal escuro */
+      --muted:#8a949e;                /* texto secundário */
+      --paper:#e9edf0;                /* “papel” claro */
+      --veil:rgba(14,18,20,.55);      /* véu sobre hero */
+      --panel:rgba(28,34,38,.55);     /* vidro fosco escuro */
+      --panel-strong:rgba(28,34,38,.75);
+      --accent:#9ac2ff;               /* acento frio (links/chips) */
+      --green:#90c9a8;                /* acento alternativo */
+      --ring:0 0 0 3px rgba(154,194,255,.35);
+      --radius:18px;
+      --shadow:0 18px 60px rgba(0,0,0,.35);
+    }
+
+    /* Reset e tipografia base */
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+      color:#f0f4f7;
+      background:
+        linear-gradient(180deg, #0b0f12 0%, #12181d 50%, #12181d 100%),
+        #12181d;
+      line-height:1.7;
+    }
+    a{color:inherit;text-decoration:none}
+    img{display:block;max-width:100%}
+    .container{max-width:1180px;margin:0 auto;padding:0 22px}
+
+    /* HEADER */
+    header{
+      position:fixed; inset:0 0 auto 0; height:74px; z-index:50;
+      background:linear-gradient(to bottom, rgba(8,10,12,.85), rgba(8,10,12,.1));
+      backdrop-filter:saturate(130%) blur(6px);
+      display:flex; align-items:center; color:#fff;
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .nav{display:flex; align-items:center; justify-content:space-between}
+    .brand{font-weight:800; letter-spacing:.08em; font-size:15px}
+    nav ul{display:flex; list-style:none; gap:26px; margin:0; padding:0}
+    nav a{
+      font-size:14px; opacity:.9; padding:8px 10px; border-radius:12px;
+      transition:opacity .2s ease, background-color .2s ease, transform .2s ease;
+    }
+    nav a:hover{opacity:1; background:rgba(255,255,255,.08)}
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      padding:12px 18px; border-radius:999px; font-weight:700; letter-spacing:.02em;
+      border:1px solid rgba(255,255,255,.35);
+      color:#fff; background:transparent;
+      transition:transform .2s ease, box-shadow .2s ease, background .2s ease;
+      will-change:transform;
+    }
+    .btn:hover{transform:translateY(-1px); box-shadow:0 10px 30px rgba(0,0,0,.35); background:rgba(255,255,255,.08)}
+    .btn-primary{background:#1f6feb; border-color:#1f6feb}
+    .btn-primary:hover{background:#1a60cf}
+
+    /* HERO — inspirado no layout (imagem grande, cartões, botão) */
+    .hero{
+      position:relative; min-height:92vh; display:flex; align-items:flex-end; color:#fff;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.35) 0%, rgba(0,0,0,.35) 30%, rgba(0,0,0,.55) 100%),
+        url('https://images.unsplash.com/photo-1495446815901-a7297e633e8d?q=80&w=2400&auto=format&fit=crop');
+      /* Livros empilhados — temática de publicações */
+      background-size:cover; background-position:center;
+    }
+    .hero::before{
+      content:""; position:absolute; inset:0; background:var(--veil);
+    }
+    .hero-inner{position:relative; z-index:1; width:100%; padding:120px 0 72px}
+    .hero-grid{display:grid; grid-template-columns:1.2fr .8fr; gap:32px; align-items:end}
+    @media (max-width:980px){ .hero-grid{grid-template-columns:1fr} }
+    .title{
+      font-size:clamp(40px, 9vw, 120px);
+      font-weight:800; letter-spacing:.03em; line-height:.9; margin:0 0 18px;
+      text-shadow:0 8px 40px rgba(0,0,0,.45);
+    }
+    .subtitle{font-size:18px; max-width:720px; opacity:.95}
+    .pill{display:inline-block; padding:8px 14px; border-radius:999px; background:rgba(255,255,255,.1); font-size:12px; letter-spacing:.12em; text-transform:uppercase}
+    .hero-cards{
+      display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:12px; margin-top:18px
+    }
+    @media (max-width:980px){ .hero-cards{grid-template-columns:repeat(2,1fr)} }
+    .hcard{
+      background:var(--panel); border:1px solid rgba(255,255,255,.08);
+      border-radius:16px; padding:12px; backdrop-filter:blur(8px);
+    }
+    .hcard p{margin:0; font-weight:600}
+    .cta-row{margin-top:22px; display:flex; gap:10px; align-items:center}
+
+    /* SEÇÕES */
+    .section{padding:86px 0}
+    .glass{
+      background:var(--panel-strong); border:1px solid rgba(255,255,255,.12);
+      border-radius:20px; padding:26px; box-shadow:var(--shadow); backdrop-filter:blur(8px);
+    }
+    .section-title{
+      font-size:34px; letter-spacing:.04em; text-transform:uppercase; color:#e9f1ff; margin:0 0 10px;
+    }
+    .section-sub{color:#c9d2da; max-width:880px}
+
+    .grid{display:grid; gap:22px}
+    .three{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .two{grid-template-columns:repeat(2,minmax(0,1fr))}
+    @media (max-width:980px){ .three{grid-template-columns:1fr 1fr} .two{grid-template-columns:1fr} }
+    .card{
+      background:var(--panel); border:1px solid rgba(255,255,255,.1);
+      border-radius:18px; overflow:hidden; display:flex; flex-direction:column; min-height:100%;
+    }
+    .card-img{height:200px; overflow:hidden}
+    .card-img img{width:100%; height:100%; object-fit:cover}
+    .card-body{padding:20px}
+    .card h3{margin:0 0 8px}
+    .card p{margin:0 0 12px; color:#cdd6de}
+    .chip{display:inline-block; padding:6px 10px; border-radius:999px; background:rgba(154,194,255,.12); color:#b9d4ff; border:1px solid rgba(154,194,255,.22); font-size:12px}
+
+    /* FEATURE (serviço detalhado) */
+    .feature{
+      display:grid; gap:22px; grid-template-columns:1.2fr .8fr; align-items:stretch;
+    }
+    @media (max-width:980px){ .feature{grid-template-columns:1fr} }
+    .feature .media{border-radius:18px; overflow:hidden; border:1px solid rgba(255,255,255,.12)}
+    .feature .media img{height:100%; width:100%; object-fit:cover}
+    .feature .copy{background:var(--panel); border:1px solid rgba(255,255,255,.1); border-radius:18px; padding:22px}
+
+    /* TIMELINE (processo) */
+    .timeline{position:relative; margin-top:6px}
+    .timeline::before{
+      content:""; position:absolute; left:14px; top:0; bottom:0; width:2px; background:rgba(255,255,255,.16);
+    }
+    .step{position:relative; padding-left:54px; margin:22px 0}
+    .step::before{
+      content:""; position:absolute; left:7px; top:.35em; width:16px; height:16px; border-radius:50%;
+      background:#1f6feb; outline:3px solid rgba(31,111,235,.35);
+    }
+
+    /* FRASES (copybank) */
+    .copybank{display:grid; gap:12px; grid-template-columns:repeat(2,minmax(0,1fr))}
+    @media (max-width:820px){ .copybank{grid-template-columns:1fr} }
+    .copybank p{
+      margin:0; padding:14px 16px; border-radius:14px; background:var(--panel);
+      border:1px solid rgba(255,255,255,.1); color:#dbe5ee;
+    }
+
+    /* FOOTER */
+    footer{padding:68px 0 36px; background:
+      linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.65)),
+      url('https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2000&auto=format&fit=crop');
+      background-size:cover; background-position:center;
+    }
+    .footer-inner{backdrop-filter:blur(4px); padding:16px 0}
+    .legal{font-size:13px; color:#c7d2dc}
+
+    /* MODAIS (contato e sucesso) */
+    .modal{
+      position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:60;
+      background:rgba(8,10,12,.6);
+    }
+    .modal[aria-hidden="false"]{display:flex}
+    .dialog{
+      width:min(720px, 92vw); background:linear-gradient(180deg, rgba(24,30,34,.95), rgba(22,26,30,.95));
+      border:1px solid rgba(255,255,255,.12); border-radius:20px; box-shadow:var(--shadow); color:#eaf0f6;
+      max-height:88vh; overflow:auto;
+    }
+    .dialog header{
+      position:sticky; top:0; background:rgba(28,34,38,.95); border-bottom:1px solid rgba(255,255,255,.08);
+      display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-radius:20px 20px 0 0;
+    }
+    .dialog .content{padding:18px 18px 22px}
+    .close{
+      border:none; background:rgba(255,255,255,.08); color:#fff; border-radius:12px; padding:8px 10px; cursor:pointer
+    }
+
+    form{display:grid; gap:14px}
+    label{font-weight:700}
+    input[type="text"], input[type="email"], textarea, select{
+      width:100%; padding:12px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.18);
+      background:rgba(255,255,255,.06); color:#eef4fb;
+      transition:box-shadow .2s ease, border-color .2s ease, background .2s ease;
+    }
+    input::placeholder, textarea::placeholder{color:#b8c4cf}
+    input:focus, textarea:focus, select:focus{outline:none; border-color:#9ac2ff; box-shadow:var(--ring)}
+    textarea{min-height:150px; resize:vertical}
+    .hint{font-size:12px; color:#afbac5}
+    .actions{display:flex; gap:10px; justify-content:flex-end; margin-top:8px}
+    .ghost{background:transparent; border:1px solid rgba(255,255,255,.2); color:#e7eef7; padding:11px 16px; border-radius:12px}
+    .primary{background:#1f6feb; color:#fff; border:1px solid #1f6feb; padding:12px 18px; border-radius:14px}
+    .primary:hover{background:#1a60cf}
+
+    /* Redução de movimento */
+    @media (prefers-reduced-motion: reduce){
+      *{animation:none!important; transition:none!important}
+      html{scroll-behavior:auto}
+    }
+  </style>
+</head>
+<body>
+  <!-- HEADER / NAV -->
+  <header role="banner" aria-label="Navegação principal">
+    <div class="container nav">
+      <div class="brand">CANGI SOLUTIONS</div>
+      <nav aria-label="Primária">
+        <ul>
+          <li><a href="#inicio">Início</a></li>
+          <li><a href="#sobre">Quem somos</a></li>
+          <li><a href="#servicos">Publicamos</a></li>
+          <li><a href="#diferencas">Por que a Cangi</a></li>
+          <li><a href="#processo">Processo</a></li>
+          <li><a href="#contato" id="open-contact" class="btn btn-primary" role="button" aria-haspopup="dialog">Contato</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section id="inicio" class="hero" role="region" aria-label="Capa">
+    <div class="container hero-inner">
+      <div class="hero-grid">
+        <div>
+          <span class="pill">Publicações com propósito</span>
+          <h1 class="title">Conteúdo que importa, no formato certo</h1>
+          <p class="subtitle">
+            A <strong>CANGI SOLUTIONS LTDA</strong> cria e mantém publicações — jornais, periódicos, livros e diretórios —
+            unindo edição de alto nível, design de informação e tecnologia. Nosso foco é relevância, longevidade e
+            distribuição mensurável.
+          </p>
+          <div class="hero-cards" aria-label="Indicadores">
+            <div class="hcard"><p>3 frentes de atuação</p></div>
+            <div class="hcard"><p>fluxo editorial rastreável</p></div>
+            <div class="hcard"><p>acessibilidade por padrão</p></div>
+            <div class="hcard"><p>metadados ONIX + SEO</p></div>
+          </div>
+          <div class="cta-row">
+            <a href="#servicos" class="btn">Explorar serviços</a>
+            <a href="#sobre" class="btn">Conhecer a equipe</a>
+          </div>
+        </div>
+        <div class="glass" aria-label="Resumo do dia a dia">
+          <h3 style="margin-top:0">O que entregamos</h3>
+          <p style="margin:0 0 6px">• Newsroom-as-a-service para jornais e revistas.</p>
+          <p style="margin:0 0 6px">• Linha completa para livros: leitura crítica, ISBN, ePub3 acessível.</p>
+          <p style="margin:0 0 6px">• Diretórios/anuários com dados verificáveis e APIs.</p>
+          <p class="hint">Atuamos de forma modular ou ponta a ponta — do rascunho ao marketplace.</p>
+          <div class="cta-row"><a id="open-contact-hero" class="btn btn-primary" href="#contato" aria-haspopup="dialog">Quero conversar</a></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOBRE -->
+  <section id="sobre" class="section" role="region" aria-labelledby="t-sobre">
+    <div class="container">
+      <h2 id="t-sobre" class="section-title">Nossa Essência Editorial</h2>
+      <p class="section-sub">
+        Localizados na <strong>Avenida Delfim Moreira, 1071, 25953-237, Teresópolis</strong>,
+        operamos no encontro entre jornalismo, literatura e dados. Nascemos de uma equipe que transitou do impresso ao digital
+        sem abrir mão do rigor. Ajudamos redações, autores e instituições a publicarem de forma consistente, com governança:
+        pautas rastreáveis, versões numeradas, guias de estilo e validações de acessibilidade.
+        Medimos impacto por coortes de leitura, não por cliques vazios. Nosso objetivo é construir catálogos que resistem ao
+        tempo e que podem ser citados, indexados e encontrados.
+      </p>
+    </div>
+  </section>
+
+  <!-- SERVIÇOS (3 cartões) -->
+  <section id="servicos" class="section" role="region" aria-labelledby="t-servicos">
+    <div class="container">
+      <h2 id="t-servicos" class="section-title">O que Publicamos & Como Trabalhamos</h2>
+      <p class="section-sub">Três frentes complementares organizam nosso portfólio.</p>
+
+      <div class="grid three">
+        <!-- Serviço 1 -->
+        <article class="card" aria-labelledby="s1">
+          <div class="card-img">
+            <img src="main1.jpg" alt="Redação de jornal ao entardecer">
+          </div>
+          <div class="card-body">
+            <span class="chip">Jornais & Revistas</span>
+            <h3 id="s1">Newsroom-as-a-Service</h3>
+            <p>Formamos células editoriais com pauta viva, calendário de seções e dois níveis de revisão (copidesque e jurídica).</p>
+            <p>Design de informação para matérias longas, boxes e infográficos responsivos. Validações automáticas de SEO e WCAG.</p>
+            <p>Distribuição em CMS com newsletters, atomização para apps e agregadores, preservando estilo e autoria.</p>
+          </div>
+        </article>
+
+        <!-- Serviço 2 -->
+        <article class="card" aria-labelledby="s2">
+          <div class="card-img">
+            <img src="main2.jpg" alt="Várias capas de livros em mesa de madeira">
+          </div>
+          <div class="card-body">
+            <span class="chip">Livros & Coleções</span>
+            <h3 id="s2">Do original ao ISBN</h3>
+            <p>Leitura crítica, preparação e revisão com guia de estilo personalizado para cada coleção.</p>
+            <p>Diagramação com hierarquia clara; geração de ePub3 acessível e PDF/X para impressão. Capas com variações para marketplace.</p>
+            <p>Registro de ISBN/DOI e metadados ONIX para descoberta e bibliotecas digitais.</p>
+          </div>
+        </article>
+
+        <!-- Serviço 3 -->
+        <article class="card" aria-labelledby="s3">
+          <div class="card-img">
+            <img src="main3.jpg" alt="Painel com gráficos e pessoas analisando dados">
+          </div>
+          <div class="card-body">
+            <span class="chip">Diretórios & Dados</span>
+            <h3 id="s3">Publicações como produto</h3>
+            <p>Coleta certificada e auditoria humana para anuários e guias setoriais. Normalização de nomes e CNPJs.</p>
+            <p>Busca facetada, fichas ricas e gráficos exportáveis; assinaturas e relatórios recorrentes.</p>
+            <p>APIs e licenças para reuso de dados com governança e consentimento claro.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIFERENCIAIS -->
+  <section id="diferencas" class="section" role="region" aria-labelledby="t-dif">
+    <div class="container">
+      <h2 id="t-dif" class="section-title">Por que escolher a Cangi</h2>
+      <p class="section-sub">Três compromissos que guiam todas as entregas.</p>
+
+      <div class="grid three">
+        <article class="card">
+          <div class="card-body">
+            <h3>Rastreabilidade total</h3>
+            <p>Checklists de estilo, changelog e créditos em cada etapa. Você sabe quem editou, quando revisou e o que mudou.</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-body">
+            <h3>Descoberta real, não cosmética</h3>
+            <p>Títulos e intertítulos pensados para contexto, schema.org, ONIX e consistência de autoria — melhorando alcance orgânico.</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-body">
+            <h3>Acessibilidade por padrão</h3>
+            <p>Contraste, navegação por teclado, texto alternativo e ePub3 acessível. Publicar para todos amplia público e impacto.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURE: detalhando serviço -->
+  <section id="feature" class="section" role="region" aria-labelledby="t-feature">
+    <div class="container feature">
+      <div class="media" aria-hidden="true">
+        <img src="main4.jpg" alt="Editor revisando provas e marcando mudanças">
+      </div>
+      <div class="copy">
+        <h2 id="t-feature" class="section-title" style="margin-bottom:8px">Edição com responsabilidade</h2>
+        <p class="section-sub" style="margin:0 0 10px">Nosso método para peças sensíveis e obras longas.</p>
+        <p><strong>Duas camadas de revisão:</strong> copidesque para clareza + revisão técnica para nomes, datas e bibliografia.</p>
+        <p><strong>Checagem de fatos:</strong> cruzamento com bases públicas e contato com fontes. Claims relevantes ganham evidência e link de verificação.</p>
+        <p><strong>Transparência com autores:</strong> comentários com intenção editorial, preservando voz e ritmo originais.</p>
+        <p class="hint">Ferramentas: estilos estruturados, InDesign, scripts ePub3, ACE by DAISY e pré-voo PDF/X.</p>
+        <div class="cta-row"><a href="#contato" class="btn btn-primary" id="open-contact-2" aria-haspopup="dialog">Falar sobre um original</a></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESSO (3 etapas) -->
+  <section id="processo" class="section" role="region" aria-labelledby="t-proc">
+    <div class="container">
+      <h2 id="t-proc" class="section-title">Nosso caminho em 3 etapas</h2>
+      <p class="section-sub">Fluxo enxuto com checkpoints claros e entregas verificáveis.</p>
+
+      <div class="timeline" aria-label="Linha do tempo do processo">
+        <div class="step">
+          <h3>1) Imersão e escopo</h3>
+          <p class="hint">Objetivos, público, canais e padrões de estilo. Cronograma, responsáveis e riscos mapeados.</p>
+        </div>
+        <div class="step">
+          <h3>2) Produção e design</h3>
+          <p class="hint">Redação com edição contínua, checagem, diagramação e versões numeradas. Validações automáticas de SEO e acessibilidade.</p>
+        </div>
+        <div class="step">
+          <h3>3) Publicação e continuidade</h3>
+          <p class="hint">ePub3/PDF prontos, ISBN/DOI, ONIX e publicação em CMS/marketplaces. Relatório de desempenho e plano do próximo ciclo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FRASES para formulários -->
+  <section id="frases" class="section" role="region" aria-labelledby="t-frases">
+    <div class="container">
+      <h2 id="t-frases" class="section-title">Frases prontas para formular contatos</h2>
+      <p class="section-sub">Use como ponto de partida ao falar conosco ou com seus leitores.</p>
+
+      <div class="copybank">
+        <p><strong>Assunto:</strong> Proposta de pauta para o caderno de Economia</p>
+        <p><strong>Assunto:</strong> Original para avaliação — coletânea de contos</p>
+        <p><strong>Mensagem:</strong> Olá, poderiam enviar a mídia kit e o calendário editorial do próximo trimestre?</p>
+        <p><strong>Mensagem:</strong> Seguem sinopse e três capítulos para leitura crítica. Aguardamos retorno com prazos.</p>
+        <p><strong>Mensagem:</strong> Solicitamos atualização dos dados da sua organização para o nosso diretório setorial.</p>
+        <p><strong>Mensagem:</strong> Favor confirmar grafia de nomes/cargos e créditos fotográficos antes da publicação.</p>
+      </div>
+
+      <div class="cta-row">
+        <a id="open-contact-3" class="btn btn-primary" href="#contato" aria-haspopup="dialog">Abrir formulário</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER / CONTATOS -->
+  <footer id="contato" role="contentinfo" aria-labelledby="t-contato">
+    <div class="container footer-inner">
+      <div class="glass">
+        <h2 id="t-contato" class="section-title" style="margin:0 0 8px">Vamos publicar algo relevante?</h2>
+        <p class="section-sub" style="margin:0 0 14px">
+          Conte sobre o público, o objetivo e o prazo. Responderemos por e-mail com próximos passos claros.
+        </p>
+        <p class="legal">
+          Endereço: Avenida Delfim Moreira, 1071, 25953-237, Teresópolis<br>
+          E-mail: <a href="mailto:renato@cangisolutions.org" rel="nofollow">renato@cangisolutions.org</a>
+        </p>
+        <div class="cta-row">
+          <a id="open-contact-4" class="btn" href="#contato" aria-haspopup="dialog">Escrever mensagem</a>
+        </div>
+      </div>
+      <p class="legal" style="margin-top:16px">© <span id="year"></span> CANGI SOLUTIONS LTDA. Publicação responsável e acessível.</p>
+    </div>
+  </footer>
+
+  <!-- MODAL: FORMULÁRIO DE CONTATO (sem telefone) -->
+  <div class="modal" id="contact-modal" role="dialog" aria-modal="true" aria-labelledby="contact-title" aria-hidden="true">
+    <div class="dialog">
+      <header>
+        <h4 id="contact-title" style="margin:0">Fale com a Cangi</h4>
+        <button class="close" type="button" aria-label="Fechar" data-close>Fechar</button>
+      </header>
+      <div class="content">
+        <form id="contact-form" novalidate>
+          <!-- Assunto -->
+          <div>
+            <label for="assunto">Assunto</label>
+            <input id="assunto" name="assunto" type="text" autocomplete="off" required placeholder="Ex.: Proposta de pauta / Avaliação de original">
+            <div class="hint">Em poucas palavras, qual é o objetivo do contato?</div>
+          </div>
+          <!-- E-mail -->
+          <div>
+            <label for="email">Seu e-mail</label>
+            <input id="email" name="email" type="email" inputmode="email" autocomplete="email" required placeholder="voce@exemplo.com">
+            <div class="hint">Usaremos este endereço somente para responder à sua mensagem.</div>
+          </div>
+          <!-- Tipo -->
+          <div>
+            <label for="tipo">Tipo de projeto</label>
+            <select id="tipo" name="tipo" required>
+              <option value="">Selecione…</option>
+              <option>Jornal/Revista</option>
+              <option>Livro (ficção ou não ficção)</option>
+              <option>Diretório/Anuário</option>
+              <option>Outro formato</option>
+            </select>
+          </div>
+          <!-- Mensagem -->
+          <div>
+            <label for="mensagem">Mensagem</label>
+            <textarea id="mensagem" name="mensagem" required placeholder="Conte o essencial: público, objetivo, prazo e referências."></textarea>
+          </div>
+          <!-- Consentimento -->
+          <div>
+            <label>
+              <input type="checkbox" id="consent" required>
+              Concordo em enviar meus dados para contato e compreendo a política de privacidade.
+            </label>
+          </div>
+          <!-- Ações -->
+          <div class="actions">
+            <button type="button" class="ghost" data-close>Cancelar</button>
+            <button type="submit" class="primary">Enviar mensagem</button>
+          </div>
+          <p class="hint">Observação: não coletamos número de telefone. Compatível com diretrizes de revisão da Apple.</p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SUCESSO -->
+  <div class="modal" id="success-modal" role="dialog" aria-modal="true" aria-labelledby="success-title" aria-hidden="true">
+    <div class="dialog">
+      <header>
+        <h4 id="success-title" style="margin:0">Mensagem enviada</h4>
+        <button class="close" type="button" aria-label="Fechar" data-close>Fechar</button>
+      </header>
+      <div class="content">
+        <p>Obrigado por escrever para a <strong>CANGI SOLUTIONS LTDA</strong>. Respondemos por e-mail normalmente em até 2 dias úteis.</p>
+        <div class="actions">
+          <button class="primary" data-close>Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ano dinâmico no rodapé
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // rolagem suave com foco acessível
+    document.querySelectorAll('a[href^="#"]').forEach(a=>{
+      a.addEventListener('click', e=>{
+        const id = a.getAttribute('href').slice(1);
+        const target = document.getElementById(id);
+        if(target){
+          e.preventDefault();
+          target.scrollIntoView({behavior:'smooth', block:'start'});
+          setTimeout(()=>{ target.setAttribute('tabindex','-1'); target.focus({preventScroll:true}); }, 560);
+        }
+      });
+    });
+
+    // Abrir modal de contato por vários gatilhos
+    const contactModal = document.getElementById('contact-modal');
+    const successModal = document.getElementById('success-modal');
+    const openers = ['open-contact','open-contact-hero','open-contact-2','open-contact-3','open-contact-4']
+      .map(id=>document.getElementById(id))
+      .filter(Boolean);
+
+    function openModal(m){
+      m.setAttribute('aria-hidden','false');
+      document.body.style.overflow='hidden';
+      const first = m.querySelector('input, textarea, select, button');
+      if(first) setTimeout(()=>first.focus(), 60);
+    }
+    function closeModal(m){
+      m.setAttribute('aria-hidden','true');
+      document.body.style.overflow='';
+    }
+
+    openers.forEach(btn=>{
+      btn.addEventListener('click', ev=>{
+        ev.preventDefault();
+        openModal(contactModal);
+      });
+    });
+
+    // fechar modais
+    document.querySelectorAll('[data-close]').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        closeModal(contactModal);
+        closeModal(successModal);
+      });
+    });
+    // clique fora fecha
+    ;[contactModal, successModal].forEach(m=>{
+      m.addEventListener('click', (e)=>{ if(e.target===m) closeModal(m); });
+      document.addEventListener('keydown', (ev)=>{ if(ev.key==='Escape') closeModal(m); });
+    });
+
+    // validação e envio (simulado) — sem telefone
+    const form = document.getElementById('contact-form');
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      let ok = true;
+      ['assunto','email','tipo','mensagem'].forEach(id=>{
+        const el = document.getElementById(id);
+        if(!el.value.trim()){
+          ok=false; el.setAttribute('aria-invalid','true'); el.style.borderColor='#ff8080';
+        }else{
+          el.removeAttribute('aria-invalid'); el.style.borderColor='rgba(255,255,255,.18)';
+        }
+      });
+      const consent = document.getElementById('consent');
+      if(!consent.checked){ ok=false; consent.focus(); }
+
+      if(!ok) return;
+
+      // simula envio
+      closeModal(contactModal);
+      openModal(successModal);
+      form.reset();
+    });
+  </script>
+</body>
+</html>
